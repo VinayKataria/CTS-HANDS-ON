@@ -1,0 +1,243 @@
+
+Insert Records - Department
+insert into department (Department_id, Department_name, department_block_number)
+values (1, "CSE", 3),
+       (2, "IT", 3),
+       (3, "SE", 3);
+
+Department name based on block number
+select department_name
+from department
+where department_block_number = 3
+order by department_name;
+
+Student and their Department Based on City
+select s.student_name, d.department_name
+from student s
+    inner join department d
+    on s.city = "Coimbatore"
+        and s.department_id = d.department_id
+order by s.student_name;
+
+
+
+Hunger eats - update table
+UPDATE customers
+SET phone_no = 9876543210
+WHERE customer_id = "CUST1004";
+
+Delivery Partner details based on rating
+SELECT partner_id, partner_name, phone_no
+from delivery_partners
+where rating between 3 and 5
+order by partner_id;
+
+car rental system - Insert values
+INSERT INTO rentals
+VALUES
+    ("R001", "C007", "V004", "2018-03-10", "2018-03-10", 800, 9000),
+    ("R002", "C001", "V007", "2018-03-11", "2018-03-12", 200, 3000),
+    ("R003", "C007", "V003", "2018-04-15", "2018-04-15", 100, 1500),
+    ("R004", "C007", "V001", "2018-05-16", "2018-05-18", 1000, 10000),
+    ("R005", "C004", "V005", "2018-05-10", "2018-05-12", 900, 11000),
+    ("R006", "C004", "V006", "2018-05-20", "2018-05-21", 200, 2500);
+
+Customers having gmail id
+select customer_id, customer_name, address, phone_no
+from customers
+where email_id like "%gmail%"
+order by customer_id;
+
+Car details based on type and name
+select car_id, car_name, car_type
+from cars
+where car_name like "Maruthi%"
+and car_type = "Sedan"
+order by car_id;
+
+Car & owner details based on car type
+select car_id, car_name, owner_id
+from cars
+where car_type in ("Hatchback", "SUV")
+order by car_id;
+
+Concatenating Details
+select concat(address, ', ', city) as address
+from student
+order by concat(address, city) desc;
+
+Hotels that took order based on month
+select distinct hotel_details.hotel_id, hotel_details.hotel_name, hotel_details.rating
+from hotel_details, orders
+where hotel_details.hotel_id = orders.hotel_id
+    and month(orders.order_date) = 7
+order by hotel_details.hotel_id;
+
+Hotel_info
+select concat(hotel_name, ' is a ', hotel_type, ' hotel') as hotel_info
+from hotel_details
+order by hotel_name desc;
+
+Rental details based on date
+select rental_id, car_id, customer_id, km_driven
+from rentals
+where month(pickup_date) = 8
+    and year(pickup_date) = 2019
+order by rental_id;
+
+Password Generation
+select name, concat(substr(NAME,1,3), substr(PHNO,1,3)) as password from users 
+order by NAME;
+
+Customer using HDFC bank
+select distinct u.name, u.address from users u
+join bookingdetails b on b.user_id = u.user_id
+where u.user_id not in 
+( select user_id from bookingdetails where name='HDFC')
+order by u.name;
+
+Insert Record using Anonymous Block
+DECLARE
+    l_department_id  department.department_id%TYPE;
+ BEGIN
+    SELECT MAX (department_id) + 10 INTO l_department_id FROM department;
+
+     INSERT INTO department (department_id, department_name, location_id)
+        VALUES (l_department_id, 'TESTING', 'CHN-102');
+        DELETE FROM department WHERE department_id='1040';
+   END;
+  /
+
+Update Location
+BEGIN
+
+update Department
+
+set LOCATION_ID = 'HQ-BLR-101'
+
+where LOCATION_ID like 'HQ%';
+
+END;
+/
+Area of a Circle
+DECLARE
+pi constant number(3,2):=3.14;
+Radius number(5);
+Area number(7,2);
+BEGIN
+Radius:=3;
+WHILE(Radius<=7)
+LOOP
+Area:= pi*power(Radius,2);
+insert into circle VALUES(Radius,Area);
+Radius:=Radius+1;
+end LOOP;
+end;
+/
+
+Insert credit - Procedure
+CREATE OR REPLACE
+PROCEDURE insert_credit(
+credit_id IN credit_card.id%TYPE,
+credit_card_number IN credit_card.card_number%TYPE,
+credit_card_expire IN credit_card.card_expire%TYPE,
+holder_name IN credit_card.name%TYPE,
+card_type IN credit_card.cc_type%TYPE) AS
+BEGIN
+INSERT INTO credit_card(id,card_number,card_expire,name,cc_type)
+VALUES(credit_id,credit_card_number,credit_card_expire,holder_name,card_type);
+END insert_credit;
+/
+
+Select city - Procedure
+create or replace procedure select_city
+     (user_id       in number,
+      city_details out varchar2                  --> no size here
+     )
+   as
+   begin
+     select case
+       when city = 'Bangalore'  then
+         'User is from Bangalore'
+       when city = 'Chennai'    then
+         'User is from Chennai'
+       else
+         'User is from other cities'
+     end tmp_status
+     into city_details
+     from contact cnt
+     where cnt.id = user_id;
+   end;
+   /
+
+Insert a Record - Triggers
+create or replace trigger trg_bie
+    after insert on employee
+    for each row
+  begin
+    dbms_output.put_line('NEW EMPLOYEE DETAILS INSERTED');
+  end;
+  /
+
+Package with a Procedure to update salary
+CREATE OR REPLACE PACKAGE emp_designation AS
+PROCEDURE emp_details
+  (
+    ps_design    employee.designation%TYPE
+  , ps_incentive NUMBER
+  );
+END emp_designation;
+/
+
+CREATE OR REPLACE PACKAGE BODY emp_designation AS
+  PROCEDURE emp_details
+    ( 
+      ps_design employee.designation%TYPE
+    , ps_incentive NUMBER
+    ) 
+  IS
+  BEGIN
+    UPDATE employee SET employee.salary = employee.salary + ps_incentive 
+      WHERE designation = ps_design; 
+    dbms_output.put_line(SQL%ROWCOUNT || ' employee(s) are updated.');
+  END emp_details;
+END;
+/
+
+Display department names using Cursors
+set serveroutput on
+DECLARE
+BEGIN
+dbms_output.put_line('Department Names are:');
+for REC IN(select DEPARTMENT_ID, DEPARTMENT_NAME , LOCATION_ID FROM DEPARTMENT order by DEPARTMENT_NAME ASC)
+LOOP
+dbms_output.pu
+t_line(REC.DEPARTMENT_NAME);
+end LOOP;
+end;
+/
+
+Procedure with Exception Handling
+CREATE PROCEDURE CHECK_AGE_ELIGIBILITY
+(
+v_id IN EMPLOYEE.EMPID%TYPE,
+v_name IN EMPLOYEE.EMPNAME%TYPE,
+v_age IN EMPLOYEE.AGE%TYPE
+)
+as
+in_valid_age exception;
+BEGIN
+if(v_age>=18) then
+insert INTO EMPLOYEE VALUES(v_id,v_name,v_age);
+dbms_output.put_line('Age valid - Record inserted');
+else
+raise in_valid_age;
+end if;
+EXCEPTION 
+when in_valid_age
+then
+dbms_output.put_line('Age invalid - Record not inserted');
+end;
+/
+
+
